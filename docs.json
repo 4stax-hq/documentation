@@ -1,5 +1,6 @@
 {
   "$schema": "https://mintlify.com/schema.json",
+  "theme": "mint",
   "name": "4StaX",
   "logo": {
     "dark": "/logo/4stax-dark.svg",
