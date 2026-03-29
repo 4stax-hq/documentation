@@ -1,0 +1,21 @@
+---
+title: Cursor setup
+description: Add persistent memory to Cursor using kontxt.
+---
+
+# Cursor setup
+
+Complete the [quickstart](/introduction/quickstart) first, then open Cursor's MCP settings and add:
+
+```json
+{
+  "mcpServers": {
+    "kontxt": {
+      "command": "node",
+      "args": ["/absolute/path/to/kontxt/packages/mcp-server/dist/index.js"]
+    }
+  }
+}
+```
+
+Restart Cursor. Memory is now active across all your Cursor sessions.

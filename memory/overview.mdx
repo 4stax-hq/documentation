@@ -1,0 +1,53 @@
+---
+title: Memory overview
+description: How 4StaX memory works across AI providers and sessions.
+---
+
+# Memory
+
+4StaX memory is a persistent, ranked context layer that travels with you across every AI provider and session.
+
+## The problem it solves
+
+Every AI session starts blank. You re-explain your stack, your preferences, your project context — every time, to every tool. Multiply that by how many sessions you have per day and it's a significant tax on how effectively you can work with AI.
+
+Memory fixes this by maintaining a structured vault of what matters and surfacing the right subset at the right time.
+
+## How it works
+
+<Steps>
+  <Step title="Capture">
+    During or after a session, significant context is stored as discrete memory entries — preferences, decisions, facts, summaries.
+  </Step>
+  <Step title="Rank">
+    When a new session starts, kontxt ranks your stored memories against the current task using semantic similarity, recency, frequency, and importance.
+  </Step>
+  <Step title="Inject">
+    The top-ranked memories are injected into your prompt automatically via MCP. Your AI client already knows the relevant context before you say anything.
+  </Step>
+  <Step title="Compound">
+    Over time your vault grows. The more sessions you have, the more accurately kontxt can surface what's relevant. Memory compounds.
+  </Step>
+</Steps>
+
+## Cross-provider
+
+The same vault works with any MCP-compatible client. Switch from Cursor to Claude Desktop to any future MCP host — your memory follows because it lives in your vault, not in any one provider's system.
+
+## What gets stored
+
+Not everything. Memory is not a transcript archive. What gets stored is structured, classified, and intentional:
+
+- **Preferences** — how you like to work, what tools you use, formatting choices
+- **Facts** — your name, role, project names, team context
+- **Decisions** — architectural choices, tradeoffs, "we decided X because Y"
+- **Summaries** — compressed representations of long sessions
+- **Instructions** — standing directives for how AI should behave with you
+
+## Privacy
+
+With kontxt running locally, nothing leaves your machine. The vault is a SQLite file on your disk. You can inspect it, back it up, or delete it at any time.
+
+<Card title="Get started" icon="rocket" href="/introduction/quickstart">
+  Run memory locally in under 5 minutes
+</Card>

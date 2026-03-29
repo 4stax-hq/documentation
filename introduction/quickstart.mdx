@@ -1,0 +1,116 @@
+---
+title: Quickstart
+description: Get persistent AI memory running locally in under 5 minutes using kontxt and MCP.
+---
+
+# Quickstart
+
+This guide gets you from zero to persistent AI memory in your MCP client (Cursor, Claude Desktop, or any MCP-compatible host) in under 5 minutes.
+
+## Prerequisites
+
+- Node.js 18 or newer
+- pnpm (`npm install -g pnpm`)
+- An MCP-compatible client (Cursor or Claude Desktop)
+
+## 1. Clone and build
+
+```bash
+git clone https://github.com/4stax-hq/kontxt.git
+cd kontxt
+pnpm install
+pnpm build
+```
+
+## 2. Initialize your vault
+
+```bash
+node packages/cli/dist/index.js init
+```
+
+This creates a `.kontxt/vault.db` file — your local memory store. Nothing leaves your machine.
+
+## 3. Configure your MCP client
+
+<Tabs>
+  <Tab title="Cursor">
+    Open your Cursor MCP settings and add:
+
+    ```json
+    {
+      "mcpServers": {
+        "kontxt": {
+          "command": "node",
+          "args": ["/path/to/kontxt/packages/mcp-server/dist/index.js"]
+        }
+      }
+    }
+    ```
+
+    Replace `/path/to/kontxt` with your actual clone path.
+  </Tab>
+  <Tab title="Claude Desktop">
+    Open `~/Library/Application Support/Claude/claude_desktop_config.json` and add:
+
+    ```json
+    {
+      "mcpServers": {
+        "kontxt": {
+          "command": "node",
+          "args": ["/path/to/kontxt/packages/mcp-server/dist/index.js"]
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## 4. Test it
+
+Try the CLI to verify everything is working:
+
+```bash
+# Store a memory
+node packages/cli/dist/index.js add "I prefer TypeScript over JavaScript" --type preference
+
+# Search your vault
+node packages/cli/dist/index.js search "language preferences"
+```
+
+You should see your stored memory returned in the search results.
+
+## 5. Use it in your AI client
+
+Restart your MCP client. From now on, kontxt will automatically surface relevant memories from your vault into your AI sessions. Try asking your AI client something related to what you stored — it should already know.
+
+<Check>
+  You now have persistent memory running locally. Every session builds on the last.
+</Check>
+
+## Optional: embeddings
+
+For better semantic search, set your OpenAI API key before building:
+
+```bash
+export OPENAI_API_KEY=sk-...
+pnpm build
+```
+
+Without it, kontxt falls back to keyword matching which still works for most use cases.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="How memory works" icon="brain" href="/memory/how-it-works">
+    Understand relevance ranking and memory types
+  </Card>
+  <Card title="MCP tools reference" icon="plug" href="/developers/mcp-tools">
+    Full reference for all exposed MCP tools
+  </Card>
+  <Card title="CLI reference" icon="terminal" href="/developers/cli">
+    All CLI commands and flags
+  </Card>
+  <Card title="Self-hosting" icon="server" href="/developers/self-hosting">
+    Run kontxt on your own server
+  </Card>
+</CardGroup>

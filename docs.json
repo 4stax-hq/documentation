@@ -1,0 +1,114 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "4StaX",
+  "logo": {
+    "dark": "/logo/4stax-dark.svg",
+    "light": "/logo/4stax-light.svg"
+  },
+  "favicon": "/logo/favicon.svg",
+  "colors": {
+    "primary": "#8B7CFF",
+    "light": "#A99FFF",
+    "dark": "#6B5CDF",
+    "background": {
+      "dark": "#0A0A0F"
+    }
+  },
+  "topbarLinks": [
+    {
+      "name": "4stax.com",
+      "url": "https://4stax.com"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Join waitlist",
+    "url": "https://4stax.com/#waitlist"
+  },
+  "tabs": [
+    {
+      "name": "Guides",
+      "url": "guides"
+    },
+    {
+      "name": "API Reference",
+      "url": "api"
+    }
+  ],
+  "anchors": [
+    {
+      "name": "GitHub",
+      "icon": "github",
+      "url": "https://github.com/4stax-hq/kontxt"
+    },
+    {
+      "name": "Changelog",
+      "icon": "list",
+      "url": "https://4stax.com/changelog"
+    },
+    {
+      "name": "Community",
+      "icon": "discord",
+      "url": "https://4stax.com/discord"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Get started",
+      "pages": [
+        "introduction/what-is-4stax",
+        "introduction/quickstart",
+        "introduction/concepts"
+      ]
+    },
+    {
+      "group": "Memory",
+      "pages": [
+        "memory/overview",
+        "memory/how-it-works",
+        "memory/mcp-setup",
+        "memory/relevance-ranking",
+        "memory/types"
+      ]
+    },
+    {
+      "group": "Vault",
+      "pages": [
+        "vault/overview",
+        "vault/permissions",
+        "vault/consent-ledger"
+      ]
+    },
+    {
+      "group": "Developers",
+      "pages": [
+        "developers/kontxt",
+        "developers/mcp-tools",
+        "developers/cli",
+        "developers/self-hosting"
+      ]
+    },
+    {
+      "group": "Guides",
+      "pages": [
+        "guides/claude-desktop",
+        "guides/cursor",
+        "guides/add-memory-to-your-app",
+        "guides/migrate-from-chatgpt"
+      ]
+    },
+    {
+      "group": "API Reference",
+      "pages": [
+        "api/overview",
+        "api/authentication",
+        "api/memory",
+        "api/vault"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "x": "https://x.com/4stax",
+    "github": "https://github.com/4stax-hq",
+    "linkedin": "https://linkedin.com/company/4stax"
+  }
+}

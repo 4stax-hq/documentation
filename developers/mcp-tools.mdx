@@ -1,0 +1,97 @@
+---
+title: MCP tools
+description: Full reference for all tools exposed by the kontxt MCP server.
+---
+
+# MCP tools
+
+Once kontxt is registered with your MCP client, these tools are available by name. Your AI client calls them automatically — you don't invoke them directly.
+
+## get_relevant_context
+
+Semantic search over your vault. Returns the top-ranked memories for the active task.
+
+**When it's called:** At the start of most sessions, or when the host determines context would be useful.
+
+**Returns:** An ordered list of memories ranked by relevance to the current task.
+
+```json
+{
+  "tool": "get_relevant_context",
+  "input": {
+    "query": "auth implementation preferences",
+    "limit": 5
+  }
+}
+```
+
+---
+
+## store_memory
+
+Write a durable memory from the current conversation.
+
+**When it's called:** When you or the AI identifies something worth preserving — a decision, a preference, a fact.
+
+```json
+{
+  "tool": "store_memory",
+  "input": {
+    "content": "Uses JWT with 7-day expiry for API auth",
+    "type": "decision",
+    "importance": 0.9
+  }
+}
+```
+
+---
+
+## store_conversation_summary
+
+Summarize and store a full thread as a single memory entry.
+
+**When it's called:** At the end of a long session to compress the context into something retrievable later.
+
+```json
+{
+  "tool": "store_conversation_summary",
+  "input": {
+    "summary": "Designed the memory relevance scoring system. Decided on 4-signal ranking: semantic similarity, recency, frequency, importance.",
+    "session_id": "abc123"
+  }
+}
+```
+
+---
+
+## get_user_profile
+
+Returns preferences and facts grouped for grounding. Used to establish who you are at the start of a session.
+
+**When it's called:** When the host needs a baseline context snapshot — typically on first message.
+
+**Returns:** A structured profile derived from your stored preferences and facts.
+
+---
+
+## auto_capture
+
+Optional passive capture of significant context from the current session.
+
+**When it's called:** Only when explicitly enabled. Monitors the session for noteworthy content and stores it without requiring manual `store_memory` calls.
+
+<Warning>
+  auto_capture is opt-in and disabled by default. Enable it only if you want fully passive memory capture.
+</Warning>
+
+---
+
+## Tool availability
+
+| Tool | Status |
+|------|--------|
+| `get_relevant_context` | ✅ Available |
+| `store_memory` | ✅ Available |
+| `store_conversation_summary` | ✅ Available |
+| `get_user_profile` | ✅ Available |
+| `auto_capture` | ✅ Available (opt-in) |

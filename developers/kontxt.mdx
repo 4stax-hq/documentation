@@ -1,0 +1,61 @@
+---
+title: kontxt
+description: The open source MCP memory server at the core of 4StaX.
+---
+
+# kontxt
+
+**kontxt** is the open source, local-first memory layer that powers 4StaX. It's an MIT-licensed MCP server you can clone, run, and inspect today — no account, no telemetry by default.
+
+<Card title="4stax-hq/kontxt" icon="github" href="https://github.com/4stax-hq/kontxt">
+  View the source on GitHub
+</Card>
+
+## What it is
+
+kontxt implements cross-session AI memory via the Model Context Protocol. It stores conversation-derived entries in a local SQLite vault, ranks them for relevance, and serves them to MCP-compatible clients like Cursor and Claude Desktop.
+
+## What it is not
+
+kontxt is not a hosted service. It runs on your machine. Your data stays on your machine. The 4StaX cloud (on the waitlist) will add sync and policy on top, but the core MCP tool surface remains identical.
+
+## Repo layout
+
+```
+kontxt/
+├── .kontxt/vault.db        # SQLite vault (created on init)
+├── packages/core/          # Shared types and utilities
+├── packages/cli/           # init, add, search, list commands
+└── packages/mcp-server/    # MCP server — tools to vault
+```
+
+## Tech stack
+
+| Layer | Technology |
+|-------|-----------|
+| Runtime | Node.js 18+ |
+| Storage | SQLite via better-sqlite3 |
+| Protocol | Model Context Protocol (MCP) |
+| Embeddings | OpenAI (optional) or keyword fallback |
+| Package manager | pnpm |
+
+## Open core model
+
+```
+kontxt (MIT, open source)
+    └── Local SQLite vault
+    └── MCP server
+    └── CLI
+
+4StaX cloud (coming)
+    └── Same MCP tool surface
+    └── Hosted sync
+    └── Organization policy
+    └── Audit exports
+```
+
+Integrations built on kontxt will work with 4StaX cloud without modification when it ships.
+
+## Contributing
+
+The repo is open for issues, bug reports, and pull requests. See `CONTRIBUTING.md` in the repository for guidelines.

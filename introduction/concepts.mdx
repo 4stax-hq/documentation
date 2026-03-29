@@ -1,0 +1,70 @@
+---
+title: Core concepts
+description: The mental model behind 4StaX — memory, vault, consent, and how they connect.
+---
+
+# Core concepts
+
+Understanding these four concepts will make everything else in the docs click.
+
+## Memory
+
+A **memory** is a discrete, structured piece of context derived from your AI conversations. Not a raw transcript — a classified, ranked unit of information.
+
+```
+{
+  content: "Prefers TypeScript. Dislikes class components.",
+  type: "preference",
+  domain: "engineering",
+  importance: 0.8,
+  created_at: "2026-03-27T00:00:00Z"
+}
+```
+
+Memories are stored in your vault and retrieved selectively — only what's relevant to the current session gets injected into the prompt. Not everything, not nothing.
+
+## The vault
+
+Your **vault** is the encrypted store where memories live. You control it — locally with SQLite today, optionally synced to the 4StaX cloud when that ships.
+
+Every read and write to the vault is logged in an immutable consent ledger. You can always see what was accessed, when, and by which application.
+
+## Relevance ranking
+
+When your AI client needs context, kontxt doesn't dump your entire memory archive into the prompt. It ranks candidates using four signals:
+
+| Signal | What it measures |
+|--------|-----------------|
+| **Semantic similarity** | How closely the memory matches the current task |
+| **Recency** | How recently the memory was created or accessed |
+| **Access frequency** | How often this memory has been useful before |
+| **Explicit importance** | The importance score set when the memory was stored |
+
+The result is a compact, relevant bundle — not noise.
+
+## Memory types
+
+| Type | Examples |
+|------|---------|
+| `preference` | Language choices, formatting preferences, communication style |
+| `fact` | Your name, role, project names, tech stack |
+| `decision` | Architectural decisions, tradeoffs made |
+| `summary` | Condensed session summaries |
+| `instruction` | Standing instructions for how AI should behave |
+
+## MCP — how it connects
+
+**MCP (Model Context Protocol)** is the standard that lets AI clients talk to external tools and data sources. kontxt implements an MCP server that exposes your vault to any compatible client.
+
+When you ask Cursor or Claude Desktop something, the MCP client calls kontxt's tools, retrieves relevant memories, and injects them into your prompt automatically. You don't see it happening — it just works.
+
+## Open source vs cloud
+
+| | kontxt (OSS) | 4StaX cloud |
+|--|--------------|-------------|
+| Storage | Local SQLite | Hosted, encrypted |
+| Sync | Single machine | Cross-device |
+| Access | No account needed | Account required |
+| Status | Available now | Waitlist |
+
+The MCP tool surface is identical between both. Integrations built on kontxt will work with 4StaX cloud without changes.
