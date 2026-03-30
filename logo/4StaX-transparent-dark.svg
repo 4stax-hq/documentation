@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 120" width="340" height="120">
-  <text y="100" x="10" font-family="'Outfit', system-ui, sans-serif" font-size="96" letter-spacing="-0.01em">
-    <tspan font-weight="700" fill="#f4f4f5">4</tspan><tspan font-weight="600" fill="#a1a1aa">Sta</tspan><tspan font-weight="800" fill="#8b7cff">X</tspan>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 100" width="300" height="100">
+  <text y="82" x="8" font-family="'Outfit', system-ui, sans-serif" font-size="88" letter-spacing="-1">
+    <tspan font-weight="700" fill="#f4f4f5">4</tspan><tspan font-weight="600" fill="#a1a1aa" dx="0">Sta</tspan><tspan font-weight="800" fill="#8b7cff" dx="0">X</tspan>
   </text>
 </svg>
