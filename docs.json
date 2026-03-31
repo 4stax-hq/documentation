@@ -3,8 +3,8 @@
   "theme": "mint",
   "name": "4StaX",
   "logo": {
-    "dark": "/logo/4StaX-transparent-dark.png",
-    "light": "/logo/4StaX-transparent-light.png"
+    "dark": "/logo/4StaX-default-dark.png",
+    "light": "/logo/4StaX-default-light.png"
   },
   "favicon": "/favicon.svg",
   "colors": {
