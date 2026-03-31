@@ -3,6 +3,63 @@ title: How memory works
 description: Relevance ranking, storage, and retrieval in depth.
 ---
 
-# How memory works
+kontxt is a local process that stores and retrieves durable context through MCP.
 
-<Note>This page is being written. See [Memory overview](/memory/overview) and [Relevance ranking](/memory/relevance-ranking) for now.</Note>
+## Storage
+
+kontxt stores memories in a local SQLite database:
+
+1. **Vault path**: `~/.kontxt/vault.db`
+2. **Entry style**: short, typed memories rather than full transcripts
+3. **Types**: `fact`, `preference`, `project`, `decision`, `skill`, `episodic`
+
+When you run `npx -y @4stax/kontxt add`, kontxt writes a new row into the vault. When your host calls `store_memory`, kontxt does the same thing, except the write is triggered by the host.
+
+## What a memory entry represents
+
+A memory entry is meant to be independently useful later. It should make sense when retrieved in isolation.
+
+Good examples:
+
+1. “Prefers TypeScript and concise answers”
+2. “This repo uses Next.js and Tailwind”
+3. “Decision: use JWT with 7 day expiry because we need stateless auth”
+
+Bad examples:
+
+1. “See above”
+2. “That bug from earlier”
+3. A raw log dump
+
+## Retrieval
+
+When your host (Cursor, Claude Desktop, etc.) needs grounding, it calls kontxt MCP tools such as `get_relevant_context` and `search_memories`. kontxt ranks candidate memories and returns a compact set of the most relevant items.
+
+### Retrieval in detail
+
+The host provides a query that represents the current task. kontxt:
+
+1. Identifies candidate memories.
+2. Computes semantic similarity when embeddings are available.
+3. Applies additional signals such as recency and frequency.
+4. Returns the top results with ids and content.
+
+Your host then chooses how to present that information to the model.
+
+## Embeddings
+
+kontxt can use multiple embedding backends. Each memory carries an `embedding_tier`, and kontxt avoids mixing tiers during similarity search to keep results stable when you change providers.
+
+### Why tiers matter
+
+Embedding vectors from different providers are not comparable. Tiering allows kontxt to remain stable when you change backends.
+
+If you start offline using Transformers.js and later add an OpenAI key, you will have two tiers in the vault. kontxt will not compare across those tiers when scoring similarity.
+
+## What to expect
+
+1. **Local first**: by default, nothing leaves your machine.
+2. **Selective injection**: only a small, relevant bundle is returned, not your whole vault.
+3. **Composable**: the same local vault can back multiple MCP hosts.
+
+For details, see [Relevance ranking](/memory/relevance-ranking) and [Memory types](/memory/types).

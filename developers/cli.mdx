@@ -3,22 +3,154 @@ title: CLI reference
 description: All kontxt CLI commands and flags.
 ---
 
-# CLI reference
+This page documents the kontxt CLI as it ships from npm. Every example uses `npx -y @4stax/kontxt` so you do not need a global install.
 
-## Commands
+If you prefer a global command, you can install the package globally and run `kontxt` directly. The flags and subcommands are the same.
+
+## Setup and initialization
 
 ```bash
-# Initialize vault
-node packages/cli/dist/index.js init
-
-# Store a memory
-node packages/cli/dist/index.js add "content here" --type preference
-
-# Search memories
-node packages/cli/dist/index.js search "query here"
-
-# List all memories
-node packages/cli/dist/index.js list
+npx -y @4stax/kontxt init              # create vault + configure supported MCP hosts
+npx -y @4stax/kontxt init --key sk-... # same + store OpenAI key (optional)
 ```
 
-See the [GitHub repo](https://github.com/4stax-hq/kontxt) for the full flag reference.
+`init` creates the local directory at `~/.kontxt/` and the SQLite vault at `~/.kontxt/vault.db`. It also tries to configure supported MCP hosts.
+
+## Writing memories
+
+### `add`
+
+Use `add` when you want to explicitly store a durable memory.
+
+```bash
+npx -y @4stax/kontxt add "I prefer TypeScript over JavaScript" -t preference
+npx -y @4stax/kontxt add "We use Next.js 15 and Tailwind in this repo" -t fact -p web
+npx -y @4stax/kontxt add "Chose JWT for auth with 7 day expiry" -t decision -p api
+```
+
+Tips:
+
+1. Use short, declarative sentences.
+2. Attach a project label with `-p` when it belongs to a specific repo or product.
+3. Use `decision` for irreversible choices so they are always easy to retrieve later.
+
+## Reading and searching
+
+### `search`
+
+Use `search` to retrieve relevant memories. Search quality depends on your embedding backend.
+
+```bash
+npx -y @4stax/kontxt search "language preferences"
+npx -y @4stax/kontxt search "auth architecture"
+```
+
+### `list`
+
+Use `list` to browse what is stored.
+
+```bash
+npx -y @4stax/kontxt list
+npx -y @4stax/kontxt list -p 4stax
+```
+
+## Editing and deleting
+
+### `edit`
+
+Use `edit` when a memory is mostly correct but needs updating.
+
+```bash
+npx -y @4stax/kontxt edit <id> "Updated content"
+```
+
+### `delete`
+
+Use `delete` to remove a memory by id. Partial id matches are supported.
+
+```bash
+npx -y @4stax/kontxt delete <id>
+```
+
+## Capture from transcripts
+
+### `capture`
+
+Use `capture` to extract durable context from a text file or stdin.
+
+```bash
+npx -y @4stax/kontxt capture --file conversation.txt
+npx -y @4stax/kontxt capture -p myproject < conversation.txt
+```
+
+### `extract`
+
+`extract` is an alias for capture:
+
+```bash
+npx -y @4stax/kontxt extract --file transcript.txt
+```
+
+## Scanning a codebase
+
+### `scan`
+
+Use `scan` when you want kontxt to ingest stable facts about a repo or directory.
+
+```bash
+npx -y @4stax/kontxt scan --dir ./my-project --project myapp
+```
+
+What to scan:
+
+1. Project name and purpose
+2. Tech stack
+3. Repo structure
+4. Commands you run often
+
+What not to scan:
+
+1. Secrets
+2. Large logs
+3. Files you would not want summarized into memory
+
+## MCP server commands
+
+### `serve`
+
+Run the MCP server in the foreground. This is what most MCP hosts run.
+
+```bash
+npx -y @4stax/kontxt serve
+```
+
+### `start` and `stop`
+
+Use these when you want kontxt running as a background daemon.
+
+```bash
+npx -y @4stax/kontxt start
+npx -y @4stax/kontxt status
+npx -y @4stax/kontxt stop
+```
+
+## Maintenance
+
+### `status`
+
+Use `status` to see vault stats and embedding mode.
+
+```bash
+npx -y @4stax/kontxt status
+```
+
+### `vacuum` and `decay`
+
+Use these when you want to remove superseded and low signal memories.
+
+```bash
+npx -y @4stax/kontxt vacuum
+npx -y @4stax/kontxt decay
+```
+
+For the most up-to-date flags and examples, see the [GitHub repo](https://github.com/4stax-hq/kontxt).

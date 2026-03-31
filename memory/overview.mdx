@@ -3,13 +3,11 @@ title: Memory overview
 description: How 4StaX memory works across AI providers and sessions.
 ---
 
-# Memory
-
 4StaX memory is a persistent, ranked context layer that travels with you across every AI provider and session.
 
 ## The problem it solves
 
-Every AI session starts blank. You re-explain your stack, your preferences, your project context — every time, to every tool. Multiply that by how many sessions you have per day and it's a significant tax on how effectively you can work with AI.
+Every AI session starts blank. You re explain your stack, your preferences, and your project context every time, to every tool. Multiply that by how many sessions you have per day and it becomes a tax on how effectively you can work with AI.
 
 Memory fixes this by maintaining a structured vault of what matters and surfacing the right subset at the right time.
 
@@ -17,7 +15,7 @@ Memory fixes this by maintaining a structured vault of what matters and surfacin
 
 <Steps>
   <Step title="Capture">
-    During or after a session, significant context is stored as discrete memory entries — preferences, decisions, facts, summaries.
+    During or after a session, significant context is stored as discrete memory entries, such as preferences, decisions, facts, and project context.
   </Step>
   <Step title="Rank">
     When a new session starts, kontxt ranks your stored memories against the current task using semantic similarity, recency, frequency, and importance.
@@ -32,17 +30,39 @@ Memory fixes this by maintaining a structured vault of what matters and surfacin
 
 ## Cross-provider
 
-The same vault works with any MCP-compatible client. Switch from Cursor to Claude Desktop to any future MCP host — your memory follows because it lives in your vault, not in any one provider's system.
+The same vault works with any MCP compatible client. Switch from Cursor to Claude Desktop to any future MCP host and your memory follows because it lives in your vault, not in any one provider system.
 
 ## What gets stored
 
 Not everything. Memory is not a transcript archive. What gets stored is structured, classified, and intentional:
 
-- **Preferences** — how you like to work, what tools you use, formatting choices
-- **Facts** — your name, role, project names, team context
-- **Decisions** — architectural choices, tradeoffs, "we decided X because Y"
-- **Summaries** — compressed representations of long sessions
-- **Instructions** — standing directives for how AI should behave with you
+- **Preferences**. How you like to work, what tools you use, formatting choices.
+- **Facts**. Your name, role, project names, team context.
+- **Projects**. Durable project context that should persist across sessions.
+- **Decisions**. Architectural choices, tradeoffs, and rationale.
+- **Skills**. What you can do and how you do it.
+- **Episodic**. Session specific context worth keeping.
+
+## What should not be stored
+
+Local first does not mean store everything. Some data is better kept out of memory.
+
+Avoid storing:
+
+1. Secrets such as API keys and passwords.
+2. Large logs and raw transcripts.
+3. Highly sensitive personal data unless you explicitly want it in the local vault.
+
+## How to get good results
+
+Memory works best when entries are short and stable.
+
+Guidelines:
+
+1. Store decisions as single statements with the reason.
+2. Store preferences as plain language.
+3. Use project scoping when the memory is tied to one repo.
+4. Keep episodic entries for things you want later but that are not permanent.
 
 ## Privacy
 

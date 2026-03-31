@@ -1,15 +1,13 @@
 ---
 title: Core concepts
-description: The mental model behind 4StaX — memory, vault, consent, and how they connect.
+description: The mental model behind 4StaX. Memory, vault, consent, and how they connect.
 ---
-
-# Core concepts
 
 Understanding these four concepts will make everything else in the docs click.
 
 ## Memory
 
-A **memory** is a discrete, structured piece of context derived from your AI conversations. Not a raw transcript — a classified, ranked unit of information.
+A **memory** is a discrete, structured piece of context derived from your AI conversations. It is not a raw transcript. It is a classified, ranked unit of information.
 
 ```
 {
@@ -21,13 +19,13 @@ A **memory** is a discrete, structured piece of context derived from your AI con
 }
 ```
 
-Memories are stored in your vault and retrieved selectively — only what's relevant to the current session gets injected into the prompt. Not everything, not nothing.
+Memories are stored in your vault and retrieved selectively. Only what is relevant to the current session gets injected into the prompt. Not everything and not nothing.
 
 ## The vault
 
-Your **vault** is the encrypted store where memories live. You control it — locally with SQLite today, optionally synced to the 4StaX cloud when that ships.
+Your **vault** is the storage layer where memories live. Today, with kontxt, that vault is a local SQLite database at `~/.kontxt/vault.db`. The encrypted, permissioned vault (and hosted sync) are on the 4StaX roadmap.
 
-Every read and write to the vault is logged in an immutable consent ledger. You can always see what was accessed, when, and by which application.
+Consent logging, granular permissions, and revocation are also part of the Vault roadmap.
 
 ## Relevance ranking
 
@@ -40,23 +38,24 @@ When your AI client needs context, kontxt doesn't dump your entire memory archiv
 | **Access frequency** | How often this memory has been useful before |
 | **Explicit importance** | The importance score set when the memory was stored |
 
-The result is a compact, relevant bundle — not noise.
+The result is a compact, relevant bundle. It is not noise.
 
 ## Memory types
 
 | Type | Examples |
 |------|---------|
+| `fact` | Your name, role, team, tech stack |
 | `preference` | Language choices, formatting preferences, communication style |
-| `fact` | Your name, role, project names, tech stack |
-| `decision` | Architectural decisions, tradeoffs made |
-| `summary` | Condensed session summaries |
-| `instruction` | Standing instructions for how AI should behave |
+| `project` | Project names, goals, ongoing context |
+| `decision` | Architectural decisions, tradeoffs, “we chose X because Y” |
+| `skill` | Things you can do (and how you do them) |
+| `episodic` | Session-specific context worth retaining for later |
 
-## MCP — how it connects
+## MCP and how it connects
 
 **MCP (Model Context Protocol)** is the standard that lets AI clients talk to external tools and data sources. kontxt implements an MCP server that exposes your vault to any compatible client.
 
-When you ask Cursor or Claude Desktop something, the MCP client calls kontxt's tools, retrieves relevant memories, and injects them into your prompt automatically. You don't see it happening — it just works.
+When you ask Cursor or Claude Desktop something, the MCP client calls kontxt tools, retrieves relevant memories, and injects them into your prompt automatically. You do not see it happening. It just works.
 
 ## Open source vs cloud
 

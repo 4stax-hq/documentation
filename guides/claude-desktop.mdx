@@ -3,13 +3,11 @@ title: Claude Desktop setup
 description: Add persistent memory to Claude Desktop using kontxt and MCP.
 ---
 
-# Claude Desktop setup
-
 This guide connects kontxt to Claude Desktop so your conversations build on each other across sessions.
 
 ## Before you start
 
-Complete the [quickstart](/introduction/quickstart) first — you need kontxt cloned, built, and initialized before configuring Claude Desktop.
+Complete the [quickstart](/introduction/quickstart) first. `npx -y @4stax/kontxt init` creates your vault and can write Claude Desktop's MCP config automatically.
 
 ## Find your config file
 
@@ -36,28 +34,20 @@ If the file doesn't exist, create it.
 {
   "mcpServers": {
     "kontxt": {
-      "command": "node",
-      "args": ["/absolute/path/to/kontxt/packages/mcp-server/dist/index.js"]
+      "command": "npx",
+      "args": ["-y", "@4stax/kontxt", "serve"]
     }
   }
 }
 ```
 
 <Warning>
-  Use the absolute path to the mcp-server dist file. Relative paths will not work.
+  Claude Desktop reads this file at startup. Fully quit and reopen Claude Desktop after changes.
 </Warning>
-
-To find your absolute path:
-
-```bash
-cd kontxt
-pwd
-# Copy this output and append /packages/mcp-server/dist/index.js
-```
 
 ## Restart Claude Desktop
 
-Fully quit and reopen Claude Desktop. MCP servers are initialized on startup — a reload is not enough.
+Fully quit and reopen Claude Desktop. MCP servers are initialized on startup. A reload is not enough.
 
 ## Verify it's working
 
@@ -79,12 +69,27 @@ Claude will call `store_memory` via kontxt. In your next session it will already
 
 <AccordionGroup>
   <Accordion title="Claude says it doesn't have memory tools">
-    The MCP server didn't connect. Check that the path in your config is correct and absolute, and that you fully quit and reopened Claude Desktop.
+    The MCP server didn't connect. Check that your JSON is valid and that you fully quit and reopened Claude Desktop.
+  </Accordion>
+  <Accordion title="Claude starts but kontxt never returns context">
+    First confirm your vault has at least one memory:
+
+    ```bash
+    npx -y @4stax/kontxt list
+    ```
+
+    If the vault is empty, store a memory and try again:
+
+    ```bash
+    npx -y @4stax/kontxt add "I prefer TypeScript over JavaScript" -t preference
+    ```
+
+    Then restart Claude Desktop and ask a question that should match that preference.
   </Accordion>
   <Accordion title="Path errors on startup">
-    Run `node /your/path/packages/mcp-server/dist/index.js` directly in your terminal. If it errors, your build may be incomplete — run `pnpm build` again in the kontxt directory.
+    Try running `npx -y @4stax/kontxt serve` in a terminal. If it errors, fix that first. Claude Desktop will surface the same underlying issue.
   </Accordion>
   <Accordion title="Vault not found error">
-    Run `node packages/cli/dist/index.js init` from the kontxt directory to create the vault before starting the MCP server.
+    Re-run `npx -y @4stax/kontxt init` to create the vault at `~/.kontxt/vault.db` before starting the MCP server.
   </Accordion>
 </AccordionGroup>

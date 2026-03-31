@@ -3,61 +3,85 @@ title: Quickstart
 description: Get persistent AI memory running locally in under 5 minutes using kontxt and MCP.
 ---
 
-# Quickstart
-
 This guide gets you from zero to persistent AI memory in your MCP client (Cursor, Claude Desktop, or any MCP-compatible host) in under 5 minutes.
 
 ## Prerequisites
 
 - Node.js 18 or newer
-- pnpm (`npm install -g pnpm`)
 - An MCP-compatible client (Cursor or Claude Desktop)
 
-## 1. Clone and build
+## 1. Initialize kontxt
 
 ```bash
-git clone https://github.com/4stax-hq/kontxt.git
-cd kontxt
-pnpm install
-pnpm build
+npx -y @4stax/kontxt init
 ```
 
-## 2. Initialize your vault
+This creates your local vault and configuration:
+
+- `~/.kontxt/vault.db` (SQLite vault)
+- `~/.kontxt/config.json` (settings; may include keys if you add them)
+- MCP host config entries for supported hosts
+
+## 1.1 What `init` actually does
+
+`init` is the core user flow. It prepares the local store and makes kontxt runnable as an MCP server.
+
+It will:
+
+- Create the `~/.kontxt/` directory if it does not exist
+- Create `~/.kontxt/vault.db` if it does not exist
+- Create or update `~/.kontxt/config.json`
+- Attempt to write MCP host config files for supported hosts when it can locate them
+
+If a host config write fails, you can still configure your host manually in step 3.
+
+## 2. Verify your vault exists
 
 ```bash
-node packages/cli/dist/index.js init
+ls -la ~/.kontxt
 ```
 
-This creates a `.kontxt/vault.db` file — your local memory store. Nothing leaves your machine.
+You should see `vault.db`.
 
-## 3. Configure your MCP client
+## 2.1 Confirm kontxt can read and write
+
+Store one memory and immediately search for it:
+
+```bash
+npx -y @4stax/kontxt add "I prefer TypeScript over JavaScript" -t preference
+npx -y @4stax/kontxt search "TypeScript preference"
+```
+
+If search returns your entry, the vault is working.
+
+## 3. (If needed) configure your MCP client manually
+
+`kontxt init` can write MCP entries automatically. If your setup needs manual configuration, use these patterns.
 
 <Tabs>
   <Tab title="Cursor">
-    Open your Cursor MCP settings and add:
+    Cursor MCP config typically lives at `~/.cursor/mcp.json`:
 
     ```json
     {
       "mcpServers": {
         "kontxt": {
-          "command": "node",
-          "args": ["/path/to/kontxt/packages/mcp-server/dist/index.js"]
+          "command": "npx",
+          "args": ["-y", "@4stax/kontxt", "serve"]
         }
       }
     }
     ```
-
-    Replace `/path/to/kontxt` with your actual clone path.
   </Tab>
-  <Tab title="Claude Desktop">
-    Open `~/Library/Application Support/Claude/claude_desktop_config.json` and add:
+  <Tab title="Claude Desktop (macOS)">
+    Claude Desktop MCP config typically lives at `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
     ```json
     {
       "mcpServers": {
         "kontxt": {
-          "command": "node",
-          "args": ["/path/to/kontxt/packages/mcp-server/dist/index.js"]
+          "command": "npx",
+          "args": ["-y", "@4stax/kontxt", "serve"]
         }
       }
     }
@@ -65,38 +89,82 @@ This creates a `.kontxt/vault.db` file — your local memory store. Nothing leav
   </Tab>
 </Tabs>
 
-## 4. Test it
+## 3.1 Validate the MCP server in a terminal
 
-Try the CLI to verify everything is working:
+Before you restart your host, confirm the server starts:
+
+```bash
+npx -y @4stax/kontxt serve
+```
+
+If it starts successfully, stop it with `Ctrl+C` and proceed.
+
+## 4. Test it (CLI)
 
 ```bash
 # Store a memory
-node packages/cli/dist/index.js add "I prefer TypeScript over JavaScript" --type preference
+npx -y @4stax/kontxt add "I prefer TypeScript over JavaScript" -t preference
 
 # Search your vault
-node packages/cli/dist/index.js search "language preferences"
+npx -y @4stax/kontxt search "language preferences"
 ```
 
 You should see your stored memory returned in the search results.
 
 ## 5. Use it in your AI client
 
-Restart your MCP client. From now on, kontxt will automatically surface relevant memories from your vault into your AI sessions. Try asking your AI client something related to what you stored — it should already know.
+Restart your MCP client. From now on, kontxt will automatically surface relevant memories from your vault into your AI sessions. Try asking your AI client something related to what you stored. It should already know.
 
 <Check>
   You now have persistent memory running locally. Every session builds on the last.
 </Check>
 
+## 5.1 What “memory” looks like in practice
+
+Ask your host something that should trigger retrieval:
+
+1. Ask a question that depends on a stored preference, such as “What language should I use for this repo”.
+2. If kontxt is connected and you previously stored “I prefer TypeScript”, the host should respond consistently with that preference.
+
+If your vault is empty, your host may still confirm tool connectivity by reporting that there is no relevant context yet.
+
 ## Optional: embeddings
 
-For better semantic search, set your OpenAI API key before building:
+For better semantic search, you can store an OpenAI key during init:
 
 ```bash
-export OPENAI_API_KEY=sk-...
-pnpm build
+npx -y @4stax/kontxt init --key sk-...
 ```
 
-Without it, kontxt falls back to keyword matching which still works for most use cases.
+Without it, kontxt can use offline embeddings (Transformers.js) or fall back to keyword matching depending on your environment.
+
+## Troubleshooting
+
+### `init` ran but `~/.kontxt/vault.db` is missing
+
+Run init again and then check the directory:
+
+```bash
+npx -y @4stax/kontxt init
+ls -la ~/.kontxt
+```
+
+If the directory exists but the database does not, check for errors printed during init.
+
+### My host does not show kontxt tools
+
+Most hosts load MCP servers at startup. Fully quit and reopen the host.
+
+If you configured the host manually, validate your JSON file is valid JSON and that it contains:
+
+```json
+{
+  "command": "npx",
+  "args": ["-y", "@4stax/kontxt", "serve"]
+}
+```
+
+Then run `npx -y @4stax/kontxt serve` in a terminal to confirm it starts without errors.
 
 ## Next steps
 

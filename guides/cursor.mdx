@@ -3,19 +3,60 @@ title: Cursor setup
 description: Add persistent memory to Cursor using kontxt.
 ---
 
-# Cursor setup
+Run the [quickstart](/introduction/quickstart) first. `npx -y @4stax/kontxt init` will usually write Cursor's MCP config for you.
 
-Complete the [quickstart](/introduction/quickstart) first, then open Cursor's MCP settings and add:
+If you need to configure Cursor manually, open Cursor's MCP settings (or edit `~/.cursor/mcp.json`) and add:
 
 ```json
 {
   "mcpServers": {
     "kontxt": {
-      "command": "node",
-      "args": ["/absolute/path/to/kontxt/packages/mcp-server/dist/index.js"]
+      "command": "npx",
+      "args": ["-y", "@4stax/kontxt", "serve"]
     }
   }
 }
 ```
 
 Restart Cursor. Memory is now active across all your Cursor sessions.
+
+## Verify the connection
+
+1. Restart Cursor fully so MCP servers are reloaded.
+2. Ask Cursor a question that should trigger retrieval, such as “What language do I prefer”.
+3. If you previously stored “I prefer TypeScript”, Cursor should respond consistently with that preference.
+
+If you have not stored anything yet, Cursor may still confirm kontxt connectivity by indicating there is no relevant context.
+
+## Troubleshooting
+
+### Cursor does not show kontxt tools
+
+Confirm the MCP server can start outside of Cursor:
+
+```bash
+npx -y @4stax/kontxt serve
+```
+
+If this fails, fix the error first. Cursor will surface the same underlying failure.
+
+### JSON config is ignored
+
+Common causes:
+
+1. The file is not valid JSON.
+2. The config file path is wrong for your system.
+3. Cursor was not fully restarted.
+
+As a sanity check, keep your server entry minimal:
+
+```json
+{
+  "mcpServers": {
+    "kontxt": {
+      "command": "npx",
+      "args": ["-y", "@4stax/kontxt", "serve"]
+    }
+  }
+}
+```

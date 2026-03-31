@@ -3,6 +3,45 @@ title: Relevance ranking
 description: How kontxt decides which memories to surface.
 ---
 
-# Relevance ranking
+kontxt ranks memory candidates using four signals: semantic similarity, recency, access frequency, and explicit importance.
 
-kontxt ranks memory candidates using four signals: semantic similarity, recency, access frequency, and explicit importance. See [Core concepts](/introduction/concepts) for the full breakdown.
+## Scoring model
+
+At a high level:
+
+```
+score = (semantic_similarity × 0.50)
+      + (recency_decay       × 0.20)
+      + (access_frequency    × 0.15)
+      + (importance_score    × 0.15)
+```
+
+These weights are meant to reflect a simple principle. Semantic similarity matters most. The other signals help keep results practical.
+
+Signal details:
+
+1. **Semantic similarity**: embedding similarity between the current query and candidate memories.
+2. **Recency decay**: exponential decay with roughly a 30 day horizon.
+3. **Access frequency**: log scaled. Memories that are repeatedly useful get a boost.
+4. **Importance score**: explicit weight set at write time.
+
+## Why recency and frequency exist
+
+Semantic similarity alone is not enough. Two memories can be semantically similar but one may be outdated. Recency and frequency help kontxt prefer memories that have proven useful recently.
+
+## Importance
+
+Importance is a manual override. Use it sparingly and only for items you always want to retrieve, such as core preferences and irreversible architectural decisions.
+
+## Embedding tiers (no mixing)
+
+Memories are tagged with an `embedding_tier`. Similarity is only computed among memories from the same tier so switching providers doesn’t produce meaningless scores.
+
+Supported tiers (in priority order):
+
+1. **OpenAI** (`text-embedding-3-small`). Optional key.
+2. **Transformers.js** (`all-MiniLM-L6-v2`). Offline after first model download to `~/.kontxt/models/`.
+3. **Ollama**. Used when `ollama serve` is running with an embedding model pulled.
+4. **Pseudo**. Keyword level fallback. Always works.
+
+See [Core concepts](/introduction/concepts) for the mental model, and the kontxt pages for integration surfaces.

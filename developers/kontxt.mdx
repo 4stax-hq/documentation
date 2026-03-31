@@ -3,9 +3,7 @@ title: kontxt
 description: The open source MCP memory server at the core of 4StaX.
 ---
 
-# kontxt
-
-**kontxt** is the open source, local-first memory layer that powers 4StaX. It's an MIT-licensed MCP server you can clone, run, and inspect today — no account, no telemetry by default.
+**kontxt** is the open source, local-first memory layer that powers 4StaX. It ships as an MIT licensed npm package with a CLI and an MCP server. No account required. No telemetry by default.
 
 <Card title="4stax-hq/kontxt" icon="github" href="https://github.com/4stax-hq/kontxt">
   View the source on GitHub
@@ -15,19 +13,60 @@ description: The open source MCP memory server at the core of 4StaX.
 
 kontxt implements cross-session AI memory via the Model Context Protocol. It stores conversation-derived entries in a local SQLite vault, ranks them for relevance, and serves them to MCP-compatible clients like Cursor and Claude Desktop.
 
+## Who it is for
+
+kontxt is built for developers who want the following properties:
+
+1. Persistent context across sessions without vendor lock in.
+2. Local first storage where you can inspect and delete everything.
+3. A standard integration surface that works across MCP hosts.
+
 ## What it is not
 
 kontxt is not a hosted service. It runs on your machine. Your data stays on your machine. The 4StaX cloud (on the waitlist) will add sync and policy on top, but the core MCP tool surface remains identical.
+
+## Mental model
+
+Think of kontxt as two things:
+
+1. A local database that stores durable memories.
+2. An MCP server that lets your AI host read and write those memories using tools.
+
+Your AI host decides when to call tools. kontxt decides what to store and what to retrieve. The host injects retrieved context into your prompt.
 
 ## Repo layout
 
 ```
 kontxt/
-├── .kontxt/vault.db        # SQLite vault (created on init)
 ├── packages/core/          # Shared types and utilities
 ├── packages/cli/           # init, add, search, list commands
-└── packages/mcp-server/    # MCP server — tools to vault
+└── packages/mcp-server/    # MCP server tools to vault
 ```
+
+## Local vault layout
+
+On first run, kontxt creates a local working directory under your home folder:
+
+```
+~/.kontxt/
+  vault.db       # SQLite memories, embeddings, scores
+  config.json    # settings (may include keys if you add them)
+  models/        # Transformers.js cache after first offline embed use
+```
+
+## What is inside `vault.db`
+
+kontxt stores short, structured entries. It does not store full transcripts by default.
+
+A memory has:
+
+1. Content, the text you want to preserve.
+2. Type, which controls how it is grouped and how it is retrieved.
+3. Optional project label, which makes it easy to filter and segment.
+4. Metadata for retrieval, such as timestamps and access counts.
+5. Optional embeddings and an embedding tier, which power semantic search.
+
+You can always inspect the database with any SQLite tool. If you delete the file, your memory is gone. There is no server side copy.
 
 ## Tech stack
 
@@ -36,8 +75,25 @@ kontxt/
 | Runtime | Node.js 18+ |
 | Storage | SQLite via better-sqlite3 |
 | Protocol | Model Context Protocol (MCP) |
-| Embeddings | OpenAI (optional) or keyword fallback |
+| Embeddings | OpenAI (optional), offline Transformers.js, Ollama (if available), or keyword fallback |
 | Package manager | pnpm |
+
+## Embeddings and tiering
+
+kontxt supports multiple embedding backends. Each stored embedding is tagged with an `embedding_tier`.
+
+Similarity search only compares vectors within the same tier. This prevents two common failure modes:
+
+1. Switching providers and getting meaningless similarity scores.
+2. Mixing offline and online embedding spaces in one query.
+
+In practice this means that you can start offline and later add an OpenAI key without corrupting retrieval quality. You will see separate tiers in the vault.
+
+## Relevance ranking
+
+kontxt returns a small set of the most relevant memories rather than dumping your entire vault.
+
+The score blends semantic similarity, recency, access frequency, and importance. The details are covered in the Memory section of the docs.
 
 ## Open core model
 
@@ -55,6 +111,46 @@ kontxt (MIT, open source)
 ```
 
 Integrations built on kontxt will work with 4StaX cloud without modification when it ships.
+
+## Install
+
+The fastest way to get running is:
+
+```bash
+npx -y @4stax/kontxt init
+```
+
+This creates `~/.kontxt/vault.db` and can configure supported MCP hosts.
+
+## Running the MCP server
+
+Most hosts will run kontxt using:
+
+```bash
+npx -y @4stax/kontxt serve
+```
+
+If you want to run it as a background process:
+
+```bash
+npx -y @4stax/kontxt start
+npx -y @4stax/kontxt status
+npx -y @4stax/kontxt stop
+```
+
+## Operational notes
+
+### Backups
+
+The simplest backup is copying `~/.kontxt/vault.db` while kontxt is not running.
+
+If you are actively using kontxt, stop the daemon first to avoid copying during a write.
+
+### Security
+
+The vault is a local file. Treat it like any sensitive local data store.
+
+If you set API keys in `~/.kontxt/config.json`, secure your user account and do not commit that file to git.
 
 ## Contributing
 

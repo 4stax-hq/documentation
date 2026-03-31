@@ -3,12 +3,71 @@ title: Memory types
 description: The different kinds of memories kontxt stores.
 ---
 
-# Memory types
+Types are a retrieval tool. They are not just labels. When you store a memory with a clear type, it becomes easier to rank and easier to use safely.
+
+If you are unsure which type to pick, start with `fact` and `preference`. Add `project` and `decision` once you want stronger structure.
 
 | Type | Description |
 |------|-------------|
+| `fact` | Stable facts about you or your work |
 | `preference` | How you like to work |
-| `fact` | Stable facts about you or your projects |
+| `project` | Ongoing project context |
 | `decision` | Architectural or strategic decisions |
-| `summary` | Compressed session summaries |
-| `instruction` | Standing directives for AI behavior |
+| `skill` | Things you can do (and how you do them) |
+| `episodic` | Session-specific context worth keeping |
+
+## Examples
+
+### `fact`
+
+Facts are stable and broadly useful.
+
+Examples:
+
+1. “We use Next.js and TypeScript”
+2. “The API is deployed on Cloudflare”
+
+### `preference`
+
+Preferences are stable preferences about style and workflow.
+
+Examples:
+
+1. “Prefer TypeScript over JavaScript”
+2. “Prefer concise answers with code snippets”
+
+### `project`
+
+Project entries are durable context that is not a single fact. It helps to attach a project label.
+
+Examples:
+
+1. “Project 4stax is a local first memory layer expanding into a vault and API”
+2. “This repo is the documentation site. It uses Mintlify and MDX pages”
+
+### `decision`
+
+Decisions should include a reason. The reason helps later when you reconsider.
+
+Examples:
+
+1. “Decision: use SQLite locally because it is inspectable and simple”
+2. “Decision: do not store secrets in the vault to reduce risk”
+
+### `skill`
+
+Skills describe repeatable workflows.
+
+Examples:
+
+1. “I can set up a Next.js app with Tailwind and deploy it”
+2. “I can write API docs and keep code examples copy paste ready”
+
+### `episodic`
+
+Episodic entries are useful later, but not permanent identity level facts.
+
+Examples:
+
+1. “This week we are shipping v0.1.0 and focusing on onboarding”
+2. “Current bug: MCP host does not reload until full restart”

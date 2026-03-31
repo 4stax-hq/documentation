@@ -3,9 +3,28 @@ title: MCP tools
 description: Full reference for all tools exposed by the kontxt MCP server.
 ---
 
-# MCP tools
+Once kontxt is registered with your MCP client, these tools are available by name. Your host calls them automatically. Most users never invoke them manually.
 
-Once kontxt is registered with your MCP client, these tools are available by name. Your AI client calls them automatically — you don't invoke them directly.
+## How hosts use these tools
+
+Most MCP hosts follow the same loop:
+
+1. Your message provides a task.
+2. The host decides whether it needs context.
+3. The host calls `get_relevant_context` with a query derived from your task.
+4. The host injects returned memories into the prompt as grounding context.
+5. During the conversation, the host may call `store_memory` or summarization tools when it identifies durable information.
+
+This means you should treat your vault like a source of stable facts, preferences, and decisions. You should not treat it as a raw transcript log.
+
+## Tool conventions
+
+Most tools use the same ideas:
+
+1. `query` is a natural language string.
+2. `limit` controls how many results are returned.
+3. `project` scopes to a named project when provided.
+4. Returned memories include an id. You can use that id for edit or delete workflows.
 
 ## get_relevant_context
 
@@ -25,13 +44,61 @@ Semantic search over your vault. Returns the top-ranked memories for the active 
 }
 ```
 
+### How to think about `query`
+
+A good query is specific. It should name the topic and the intent.
+
+Examples:
+
+1. “auth architecture decisions”
+2. “repo stack and conventions”
+3. “preferred formatting and tone”
+
+---
+
+## search_memories
+
+Search your vault with scores and stable IDs (useful for follow-up actions like edit/delete).
+
+```json
+{
+  "tool": "search_memories",
+  "input": {
+    "query": "language preferences",
+    "limit": 20
+  }
+}
+```
+
+---
+
+## list_memories
+
+List vault contents, optionally filtered (for example by project).
+
+```json
+{
+  "tool": "list_memories",
+  "input": {
+    "project": "4stax",
+    "limit": 50
+  }
+}
+```
+
+### Common uses
+
+1. You want to browse everything you have stored.
+2. You want to inspect a project scoped memory set.
+3. You want to find an id to delete or edit.
+
 ---
 
 ## store_memory
 
 Write a durable memory from the current conversation.
 
-**When it's called:** When you or the AI identifies something worth preserving — a decision, a preference, a fact.
+**When it's called:** When you or the AI identifies something worth preserving, such as a decision, a preference, or a fact.
 
 ```json
 {
@@ -43,6 +110,19 @@ Write a durable memory from the current conversation.
   }
 }
 ```
+
+### Choosing a type
+
+Use types consistently. Retrieval quality improves when types match intent.
+
+Recommended mapping:
+
+1. `preference` for stable personal preferences.
+2. `fact` for stable project facts and identity facts.
+3. `project` for ongoing context that is not a single fact.
+4. `decision` for decisions and tradeoffs.
+5. `skill` for capabilities and workflows.
+6. `episodic` for context you may want later but that is not permanent.
 
 ---
 
@@ -62,36 +142,84 @@ Summarize and store a full thread as a single memory entry.
 }
 ```
 
+### When to use summaries
+
+Use summaries when a session contains multiple decisions and stable facts, but storing each as a separate memory would be noisy.
+
+Summaries are most useful for:
+
+1. Technical design sessions
+2. Project planning sessions
+3. Debugging sessions with a clear root cause
+
+---
+
+## auto_capture
+
+Like `store_conversation_summary`, but with stronger automatic typing/classification. Useful when you want passive “extract the durable bits” behavior.
+
+<Warning>
+  auto_capture is opt-in and disabled by default. Enable it only if you want more passive capture.
+</Warning>
+
+### Suggested workflow
+
+If your host supports it, use auto capture near the end of a long session. It can extract multiple typed entries that are easier to retrieve later than a single long summary.
+
 ---
 
 ## get_user_profile
 
 Returns preferences and facts grouped for grounding. Used to establish who you are at the start of a session.
 
-**When it's called:** When the host needs a baseline context snapshot — typically on first message.
+**When it's called:** When the host needs a baseline context snapshot, typically on the first message.
 
 **Returns:** A structured profile derived from your stored preferences and facts.
 
----
+### What belongs in a profile
 
-## auto_capture
+Profiles are useful when they stay stable.
 
-Optional passive capture of significant context from the current session.
+Good profile content:
 
-**When it's called:** Only when explicitly enabled. Monitors the session for noteworthy content and stores it without requiring manual `store_memory` calls.
-
-<Warning>
-  auto_capture is opt-in and disabled by default. Enable it only if you want fully passive memory capture.
-</Warning>
+1. Your preferred language and formatting.
+2. Your default stack and tools.
+3. Stable constraints, such as “keep answers concise” or “prefer SQL migrations over ORM magic”.
 
 ---
+
+## delete_memory
+
+Delete a memory by ID.
+
+```json
+{
+  "tool": "delete_memory",
+  "input": {
+    "id": "mem_abc123"
+  }
+}
+```
+
+### Safety note
+
+Deletion is permanent because the vault is local. If you need undo, back up your database file periodically.
 
 ## Tool availability
 
 | Tool | Status |
 |------|--------|
-| `get_relevant_context` | ✅ Available |
-| `store_memory` | ✅ Available |
-| `store_conversation_summary` | ✅ Available |
-| `get_user_profile` | ✅ Available |
-| `auto_capture` | ✅ Available (opt-in) |
+| `get_relevant_context` | Available |
+| `search_memories` | Available |
+| `list_memories` | Available |
+| `store_memory` | Available |
+| `store_conversation_summary` | Available |
+| `get_user_profile` | Available |
+| `auto_capture` | Available. Opt in. |
+| `delete_memory` | Available |
+
+## Prompt resource: kontxt_context
+
+Some hosts support prompt “resources” that are injected at session start. kontxt exposes a `kontxt_context` resource that provides top-ranked memories as grounding context.
+
+If your host supports prompt resources, this is the simplest way to get “always on” grounding without manually requesting context.

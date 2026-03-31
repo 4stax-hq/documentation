@@ -1,15 +1,13 @@
 ---
 title: What is 4StaX?
-description: The personal data OS for the AI era — memory, vault, and intelligence that follows you across every AI provider.
+description: The personal data OS for the AI era. Memory, vault, and intelligence that follows you across every AI provider.
 ---
-
-# The cold start
 
 Every time you switch between ChatGPT, Claude, Gemini, or any other AI tool, you start from zero. No memory of what you're working on. No context about how you think. No continuity.
 
 **4StaX fixes that.**
 
-It's a personal data OS built for the AI era — starting with a cross-provider memory layer and expanding into a full data vault, marketplace, and intelligence platform where you own, control, and optionally monetize your data.
+It's a personal data OS built for the AI era. It starts with a cross provider memory layer and expands into a full data vault, marketplace, and intelligence platform where you own, control, and optionally monetize your data.
 
 <CardGroup cols={2}>
   <Card title="Memory" icon="layer-group" href="/memory/overview">
@@ -19,7 +17,7 @@ It's a personal data OS built for the AI era — starting with a cross-provider 
     Encrypted storage with granular permissions and full audit trail
   </Card>
   <Card title="Developers" icon="code" href="/developers/kontxt">
-    Open source MCP server — run it locally today
+    Open source MCP server. Run it locally today
   </Card>
   <Card title="Quickstart" icon="rocket" href="/introduction/quickstart">
     Get memory running in under 5 minutes
@@ -33,7 +31,7 @@ The name 4StaX refers to the four layers that compound over time:
 | Layer | What it does |
 |-------|-------------|
 | **Memory** | Persists context across every AI session |
-| **Vault** | Encrypted, permissioned storage you control |
+| **Vault** | Encrypted, permissioned storage you control (roadmap) |
 | **Marketplace** | Opt-in data sharing with transparent earnings |
 | **Intelligence** | Compounds into a cognitive profile over time |
 
@@ -51,9 +49,21 @@ The name 4StaX refers to the four layers that compound over time:
 
 | Feature | Status |
 |---------|--------|
-| kontxt MCP server (local) | ✅ Available — [GitHub](https://github.com/4stax-hq/kontxt) |
-| CLI tools | ✅ Available |
-| Cross-provider memory sync | 🔜 Cloud waitlist |
-| Vault | 🔜 Coming |
-| Marketplace | 🔜 Roadmap |
-| Developer API | 🔜 Roadmap |
+| kontxt (Layer 1). npm package, MCP, CLI | Available now. [GitHub](https://github.com/4stax-hq/kontxt) |
+| Local SQLite vault (`~/.kontxt/vault.db`) | Available now |
+| Hosted memory API | Roadmap and waitlist |
+| Encrypted vault + permissions + consent ledger | Roadmap |
+| Marketplace | Roadmap |
+| Training and annotation programs | Roadmap |
+
+## Platform map (5 layers)
+
+4StaX is designed as five layers, from local memory to hosted enterprise surfaces. **kontxt implements Layer 1 today.**
+
+| Layer | Name | What it is |
+|------:|------|------------|
+| 1 | **AI memory layer (kontxt)** | npm package with a local SQLite vault under `~/.kontxt/`, MCP + CLI; cross-provider context that persists across sessions |
+| 2 | **Personal data vault** | encrypted storage, granular permissions, revocation, immutable consent ledger |
+| 3 | **Data marketplace** | opt-in monetization of attributed or anonymized data with verified consent trails |
+| 4 | **Training & annotation** | consent-aware labeling + evaluation programs built on the same vault |
+| 5 | **Developer & enterprise API** | hosted memory API and compliance-oriented tooling (roadmap at `api.4stax.com`) |

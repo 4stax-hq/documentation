@@ -3,6 +3,94 @@ title: MCP setup
 description: Connect kontxt to your MCP client.
 ---
 
-# MCP setup
+This page explains how kontxt connects to MCP hosts and what “connected” means in practice. For the fastest path, follow the [quickstart](/introduction/quickstart).
 
-See the [quickstart](/introduction/quickstart) for full setup instructions, and the [Claude Desktop guide](/guides/claude-desktop) or [Cursor guide](/guides/cursor) for client-specific steps.
+If you want host specific instructions, use the guides:
+
+1. [Cursor setup](/guides/cursor)
+2. [Claude Desktop setup](/guides/claude-desktop)
+
+## What MCP is in this context
+
+MCP is the protocol your host uses to talk to external tools over a standard interface. kontxt implements an MCP server that exposes your local vault as tools.
+
+When kontxt is connected:
+
+1. Your host can call kontxt tools like `get_relevant_context` and `store_memory`.
+2. kontxt can return a small set of relevant memories for the current task.
+3. Your host can inject that context into the prompt before the model responds.
+
+## How kontxt is started by a host
+
+Most hosts start kontxt using a command and argument list. The recommended configuration is:
+
+```json
+{
+  "mcpServers": {
+    "kontxt": {
+      "command": "npx",
+      "args": ["-y", "@4stax/kontxt", "serve"]
+    }
+  }
+}
+```
+
+This runs kontxt in the foreground as a stdio based MCP server.
+
+## Where host config files live
+
+Common locations:
+
+<Tabs>
+  <Tab title="Cursor">
+    `~/.cursor/mcp.json`
+  </Tab>
+  <Tab title="Claude Desktop (macOS)">
+    `~/Library/Application Support/Claude/claude_desktop_config.json`
+  </Tab>
+</Tabs>
+
+Some hosts provide a UI that writes these files for you. When in doubt, validate by starting the server manually.
+
+## Verifying your setup
+
+### Step 1: Confirm the vault exists
+
+```bash
+ls -la ~/.kontxt
+```
+
+You should see `vault.db`.
+
+### Step 2: Confirm the server starts
+
+```bash
+npx -y @4stax/kontxt serve
+```
+
+If it starts successfully, stop it with `Ctrl+C`.
+
+### Step 3: Confirm you can store and retrieve
+
+```bash
+npx -y @4stax/kontxt add "I prefer TypeScript over JavaScript" -t preference
+npx -y @4stax/kontxt search "TypeScript preference"
+```
+
+### Step 4: Confirm the host is actually calling tools
+
+Restart your host completely and ask a question that should depend on stored memory. If the response is consistent with stored preferences, kontxt is working end to end.
+
+## Common failure modes
+
+### The host does not load MCP servers
+
+Fully quit and reopen the host. Most hosts initialize MCP servers at startup only.
+
+### `npx` is not found
+
+Ensure Node.js is installed and `npx` is available in your PATH. On macOS, install Node using your preferred method and then restart your terminal and host.
+
+### The vault is empty
+
+If you have never stored anything, retrieval will return no results. Store at least one `preference` or `fact` and try again.

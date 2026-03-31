@@ -3,8 +3,78 @@ title: Add memory to your app
 description: Integrate 4StaX memory into your own application.
 ---
 
-# Add memory to your app
+This guide covers the practical ways to integrate kontxt with software you are building today.
 
-<Note>The developer API is coming soon. Join the [waitlist](https://4stax.com/#waitlist) to get early access and shape the API design.</Note>
+<Note>
+  The hosted 4StaX developer API is on the roadmap. Today, the production ready integration surface is kontxt over MCP and the local CLI.
+</Note>
 
-In the meantime, you can use kontxt directly via MCP in any MCP-compatible client today.
+## Integration options available today
+
+### Option 1: Ship kontxt as part of your developer workflow
+
+If you are building a tool for developers, the simplest approach is to document kontxt as an optional dependency:
+
+1. Your users install and initialize kontxt locally.
+2. Your app or IDE host connects to kontxt via MCP.
+3. Your app uses kontxt as the durable store for context.
+
+This is ideal when your app already runs inside an MCP host such as Cursor or Claude Desktop.
+
+### Option 2: Use kontxt locally during development and support
+
+Even if your app does not integrate directly, kontxt is useful as a local memory store for:
+
+1. Project decisions
+2. Debugging notes
+3. Release checklists
+4. User support context
+
+This is useful for solo developers and small teams that want durable project context without building any backend.
+
+## Installation for users
+
+```bash
+npx -y @4stax/kontxt init
+```
+
+This creates `~/.kontxt/vault.db` and configures supported MCP hosts when possible.
+
+## Common workflows you can recommend
+
+### Store project context
+
+```bash
+npx -y @4stax/kontxt add "This app uses Next.js 15 with Tailwind" -t fact -p myapp
+npx -y @4stax/kontxt add "Decision: use JWT with 7 day expiry for auth" -t decision -p myapp
+```
+
+### Capture a design discussion
+
+Put notes into a file and capture them:
+
+```bash
+npx -y @4stax/kontxt capture --file design-notes.txt -p myapp
+```
+
+### Scan a repo to seed baseline context
+
+```bash
+npx -y @4stax/kontxt scan --dir . --project myapp
+```
+
+## If you want programmatic access today
+
+The supported programmatic surface today is MCP tool calls through an MCP host. If your app is building its own MCP host, you can:
+
+1. Start kontxt as an MCP server using `npx -y @4stax/kontxt serve`.
+2. Implement the MCP client side in your app.
+3. Call tools such as `search_memories` and `store_memory`.
+
+For the tool list and semantics, see [MCP tools](/developers/mcp-tools).
+
+## Roadmap: hosted developer API
+
+The hosted API will make it possible to do memory read and write from backends and multi device environments without relying on a local process.
+
+If you want early access, join the waitlist and include your use case so the API shape matches real needs.

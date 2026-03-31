@@ -3,6 +3,11 @@ title: Self-hosting
 description: Run kontxt on your own server.
 ---
 
-# Self-hosting
+kontxt is fully self hostable. It is a Node.js process. For most setups, you can run the MCP server directly via npm without cloning:
 
-kontxt is fully self-hostable — it's just a Node.js process. Clone the repo, build it, and run the MCP server on any machine you control. See the [README](https://github.com/4stax-hq/kontxt) for server deployment instructions.
+```bash
+npx -y @4stax/kontxt init
+npx -y @4stax/kontxt serve
+```
+
+If you need deeper customization or want to run from source, see the [README](https://github.com/4stax-hq/kontxt) in the repo.
